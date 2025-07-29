@@ -15,8 +15,22 @@ export class UsersRepository {
         });
     }
 
+    async findById(id: string) {
+        const user = await prisma.user.findUnique({
+            where: { id },
+        });
+        return user;
+    }
+
     async findAllUsers() {
         const users = await prisma.user.findMany();
         return users;
+    }
+
+    async findByEmail(email: string) {
+        return await prisma.user.findUnique({
+            where: { email },
+            select: { id: true, email: true, password: true },
+        });
     }
 }

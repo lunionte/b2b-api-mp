@@ -7,6 +7,11 @@ export class UsersController {
         res.json({ message: "Usuário criado com sucesso!" });
     }
 
+    static async getCurrentUser(req: Request, res: Response) {
+        const user = await new UserService().getCurrentUser(req.user!.id);
+        res.json(user);
+    }
+
     static async findAllUsers(req: Request, res: Response) {
         const users = await new UserService().findAllUsers();
         res.json(users);
