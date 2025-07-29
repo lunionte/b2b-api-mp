@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String  @id @default(uuid()) @db.Uuid
+  name             String?
+  email            String  @unique
+  isEmailConfirmed Boolean @default(false)
+  password         String  @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // token de acesso do cliente para fazer requisições da minha api com o mercado pago
+  mpUserId       String?
+  mpAcessToken   String?
+  mpRefreshToken String?
+  mpExpiresAt    String?
+
+  store Store[]
+}
+
+model Store {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  slug      String   @unique
+  ownerId   String   @db.Uuid
+  createdAt DateTime @default(now())
+
+  owner   User      @relation(fields: [ownerId], references: [id])
+  product Product[]
+  sales   Sales[]
+}
+
+model Product {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String
+  description String?
+  price       Decimal  @db.Decimal(10, 2)
+  imageUrl    String?
+  storeId     String   @db.Uuid
+  createdAt   DateTime @default(now())
+
+  store Store   @relation(fields: [storeId], references: [id])
+  sales Sales[]
+}
+
+model Sales {
+  id          String   @id @default(uuid()) @db.Uuid
+  storeId     String   @db.Uuid
+  productId   String   @db.Uuid
+  buyerEmail  String
+  paymentLink String
+  status      String
+  createdAt   DateTime @default(now())
+
+  store   Store   @relation(fields: [storeId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+}
+
+model WebHookEvent {
+  id         String   @id @default(ulid()) @db.Uuid
+  type       String // ex: payment.created, payment.updated
+  data       Json // payload completo
+  receivedAt DateTime @default(now())
+}
