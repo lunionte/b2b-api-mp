@@ -5,7 +5,7 @@ import { userRoutes } from "./routes/users.route";
 import { errors } from "celebrate";
 import { authRoutes } from "./routes/auth.route";
 import { countriesRoutes } from "./routes/countries.route";
-import { errorHandler } from "./middlewares/error.handler";
+import { errorHandler } from "./middlewares/error-handler.middleware";
 
 const app = express();
 app.use(cors());
