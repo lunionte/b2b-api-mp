@@ -13,6 +13,7 @@ export class UserService {
     async getCurrentUser(id: string) {
         const user = await this.userRepository.findById(id);
         return {
+            id: user?.id,
             name: user?.name,
             email: user?.email,
             isConfirmedEmail: user?.isEmailConfirmed,
